@@ -83,19 +83,23 @@ func main() {
 	currentI = startI
 	currentJ = startJ
 
-	for matriz[currentI][currentJ] != "O" {
+	for matriz[currentI][currentJ] != "0" && (currentI+1 > width || currentI+1 > height) {
 		if currentI-1 > 0 && matriz[currentI-1][currentJ] != "1" {
 			currentCoord := fmt.Sprint("[", currentI-1, currentJ, "]")
 			fmt.Println("C " + currentCoord)
+			currentI--
 		} else if currentJ+1 < width && matriz[currentI][currentJ+1] != "1" {
 			currentCoord := fmt.Sprint("[", currentI, currentJ+1, "]")
 			fmt.Println("D " + currentCoord)
+			currentJ++
 		} else if currentJ-1 > 0 && matriz[currentI][currentJ-1] != "1" {
 			currentCoord := fmt.Sprint("[", currentI-1, currentJ, "]")
 			fmt.Println("E " + currentCoord)
+			currentJ--
 		} else if currentI+1 < height && matriz[currentI+1][currentJ] != "1" {
 			currentCoord := fmt.Sprint("[", currentI+1, currentJ, "]")
 			fmt.Println("B " + currentCoord)
+			currentI++
 		} else if matriz[currentI][currentJ] == "0" && (currentI+1 > width || currentI+1 > height) {
 			break
 		}

@@ -9,11 +9,16 @@ import (
 	"strings"
 )
 
+type Coord struct {
+	row, col int
+}
+
 func main() {
 	var width, height, i, startI, startJ, currentI, currentJ int
 	var matriz [][]string
 	var fields []string
 	var haveStart bool
+	var currentCoord string
 
 	lineNumber := 1
 
@@ -82,26 +87,39 @@ func main() {
 
 	currentI = startI
 	currentJ = startJ
+	visited := make(map[Coord]bool) // Mapa para rastrear as posições visitadas
 
-	for matriz[currentI][currentJ] != "0" && (currentI+1 > width || currentI+1 > height) {
-		if currentI-1 > 0 && matriz[currentI-1][currentJ] != "1" {
-			currentCoord := fmt.Sprint("[", currentI-1, currentJ, "]")
-			fmt.Println("C " + currentCoord)
-			currentI--
-		} else if currentJ+1 < width && matriz[currentI][currentJ+1] != "1" {
-			currentCoord := fmt.Sprint("[", currentI, currentJ+1, "]")
-			fmt.Println("D " + currentCoord)
-			currentJ++
-		} else if currentJ-1 > 0 && matriz[currentI][currentJ-1] != "1" {
-			currentCoord := fmt.Sprint("[", currentI-1, currentJ, "]")
-			fmt.Println("E " + currentCoord)
-			currentJ--
-		} else if currentI+1 < height && matriz[currentI+1][currentJ] != "1" {
-			currentCoord := fmt.Sprint("[", currentI+1, currentJ, "]")
-			fmt.Println("B " + currentCoord)
-			currentI++
-		} else if matriz[currentI][currentJ] == "0" && (currentI+1 > width || currentI+1 > height) {
+	for i = 0; matriz[currentI][currentJ] != "O"; i++ {
+		// Cria uma coordenada com base na posição atual
+		currentPos := Coord{currentI, currentJ}
+
+		// Verifica se a posição atual já foi visitada
+		if visited[currentPos] {
+			fmt.Println("Ja passei aqui")
 			break
 		}
+
+		// visited[currentPos] = true
+
+		if (currentI-1 >= 0 || currentI+1 <= height || currentJ+1 <= width || currentJ-1 >= 0) && (matriz[currentI][currentJ] != "1") {
+			if currentI-1 > 0 && matriz[currentI-1][currentJ] != "1" {
+				currentCoord += fmt.Sprint("C [", currentI-1, currentJ, "]\n")
+				currentI -= 1
+			} else if currentJ+1 < width && matriz[currentI][currentJ+1] != "1" {
+				currentCoord += fmt.Sprint("D [", currentI, currentJ+1, "]\n")
+				currentJ += 1
+			} else if currentJ-1 > 0 && matriz[currentI][currentJ-1] != "1" {
+				currentCoord += fmt.Sprint("E [", currentI, currentJ-1, "]\n")
+				currentJ -= 1
+			} else if currentI+1 < height && matriz[currentI+1][currentJ] != "1" {
+				currentCoord += fmt.Sprint("B [", currentI+1, currentJ, "]\n")
+				currentI += 1
+			} else {
+				fmt.Println("Não é possivel resolver o labirinto")
+				break
+			}
+		}
+
+		fmt.Println(currentCoord)
 	}
 }

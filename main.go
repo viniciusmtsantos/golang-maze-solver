@@ -9,10 +9,6 @@ import (
 	"strings"
 )
 
-type Coord struct {
-	row, col int
-}
-
 func main() {
 	var width, height, i, startI, startJ, currentI, currentJ int
 	var matriz [][]string
@@ -22,7 +18,7 @@ func main() {
 
 	lineNumber := 1
 
-	file, err := os.Open("./maze.txt")
+	file, err := os.Open("./maze2.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,8 +71,7 @@ func main() {
 				startI = i
 				startJ = j
 				haveStart = true
-				currentCoord := fmt.Sprint("[", startI, startJ, "]")
-				fmt.Println("O " + currentCoord)
+				currentCoord = fmt.Sprintf("O [%d,%d]\n", startI, startJ)
 				break
 			}
 		}
@@ -87,35 +82,38 @@ func main() {
 
 	currentI = startI
 	currentJ = startJ
-	visitou := ""
-	for i = 0; matriz[currentI][currentJ] != "O"; i++ {
+	visited := make(map[string]bool)
+	visited[fmt.Sprintf("%d-%d", currentI, currentJ)] = true
+
+	for {
+
+		if (currentI == 0 || currentJ == 0) && matriz[currentI][currentJ] != "X" {
+			break
+		} else if (currentI+1 == height || currentJ+1 == width) && matriz[currentI][currentJ] != "X" {
+			break
+		}
 
 		if (currentI-1 >= 0 || currentI+1 <= height || currentJ+1 <= width || currentJ-1 >= 0) && (matriz[currentI][currentJ] != "1") {
-			if currentI-1 > 0 && matriz[currentI-1][currentJ] != "1" && (!strings.HasSuffix(visitou, "BB") && !strings.HasSuffix(visitou, "CB")) {
-				currentCoord += fmt.Sprint("C [", currentI-1, currentJ, "]\n")
+			if currentI-1 > 0 && matriz[currentI-1][currentJ] != "1" && !visited[fmt.Sprintf("%d-%d", currentI-1, currentJ)] {
+				currentCoord += fmt.Sprintf("C [%d,%d]\n", currentI-1, currentJ)
 				currentI -= 1
-				visitou += "C"
-			} else if currentJ+1 < width && matriz[currentI][currentJ+1] != "1" && (!strings.HasSuffix(visitou, "EE") || !strings.HasSuffix(visitou, "DE")) {
-				currentCoord += fmt.Sprint("D [", currentI, currentJ+1, "]\n")
+			} else if currentJ+1 <= width && matriz[currentI][currentJ+1] != "1" && !visited[fmt.Sprintf("%d-%d", currentI, currentJ+1)] {
+				currentCoord += fmt.Sprintf("D [%d,%d]\n", currentI, currentJ+1)
 				currentJ += 1
-				visitou += "D"
-			} else if currentJ-1 > 0 && matriz[currentI][currentJ-1] != "1" && (!strings.HasSuffix(visitou, "DD") || !strings.HasSuffix(visitou, "ED")) {
-				currentCoord += fmt.Sprint("E [", currentI, currentJ-1, "]\n")
+			} else if currentJ-1 >= 0 && matriz[currentI][currentJ-1] != "1" && !visited[fmt.Sprintf("%d-%d", currentI, currentJ-1)] {
+				currentCoord += fmt.Sprintf("E [%d,%d]\n", currentI, currentJ-1)
 				currentJ -= 1
-				visitou += "E"
-			} else if currentI+1 < height && matriz[currentI+1][currentJ] != "1" && (!strings.HasSuffix(visitou, "CC") || !strings.HasSuffix(visitou, "BC")) {
-				currentCoord += fmt.Sprint("B [", currentI+1, currentJ, "]\n")
+			} else if currentI+1 <= height && matriz[currentI+1][currentJ] != "1" && !visited[fmt.Sprintf("%d-%d", currentI+1, currentJ)] {
+				currentCoord += fmt.Sprintf("B [%d,%d]\n", currentI+1, currentJ)
 				currentI += 1
-				visitou += "B"
-			} else if currentI-1 >= 0 || currentI+1 <= height || currentJ+1 <= width || currentJ-1 >= 0 {
-				fmt.Println("Labirinto resolvido!")
-				break
 			} else {
-				fmt.Println("Não é possivel resolver o labirinto")
+				fmt.Println("Não é possível resolver o labirinto")
 				break
 			}
 		}
 
-		fmt.Println(currentCoord)
+		visited[fmt.Sprintf("%d-%d", currentI, currentJ)] = true
+
 	}
+	fmt.Println(currentCoord)
 }

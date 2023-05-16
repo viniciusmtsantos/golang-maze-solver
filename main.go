@@ -87,33 +87,29 @@ func main() {
 
 	currentI = startI
 	currentJ = startJ
-	visited := make(map[Coord]bool) // Mapa para rastrear as posições visitadas
-
+	visitou := ""
 	for i = 0; matriz[currentI][currentJ] != "O"; i++ {
-		// Cria uma coordenada com base na posição atual
-		currentPos := Coord{currentI, currentJ}
-
-		// Verifica se a posição atual já foi visitada
-		if visited[currentPos] {
-			fmt.Println("Ja passei aqui")
-			break
-		}
-
-		// visited[currentPos] = true
 
 		if (currentI-1 >= 0 || currentI+1 <= height || currentJ+1 <= width || currentJ-1 >= 0) && (matriz[currentI][currentJ] != "1") {
-			if currentI-1 > 0 && matriz[currentI-1][currentJ] != "1" {
+			if currentI-1 > 0 && matriz[currentI-1][currentJ] != "1" && (!strings.HasSuffix(visitou, "BB") && !strings.HasSuffix(visitou, "CB")) {
 				currentCoord += fmt.Sprint("C [", currentI-1, currentJ, "]\n")
 				currentI -= 1
-			} else if currentJ+1 < width && matriz[currentI][currentJ+1] != "1" {
+				visitou += "C"
+			} else if currentJ+1 < width && matriz[currentI][currentJ+1] != "1" && (!strings.HasSuffix(visitou, "EE") || !strings.HasSuffix(visitou, "DE")) {
 				currentCoord += fmt.Sprint("D [", currentI, currentJ+1, "]\n")
 				currentJ += 1
-			} else if currentJ-1 > 0 && matriz[currentI][currentJ-1] != "1" {
+				visitou += "D"
+			} else if currentJ-1 > 0 && matriz[currentI][currentJ-1] != "1" && (!strings.HasSuffix(visitou, "DD") || !strings.HasSuffix(visitou, "ED")) {
 				currentCoord += fmt.Sprint("E [", currentI, currentJ-1, "]\n")
 				currentJ -= 1
-			} else if currentI+1 < height && matriz[currentI+1][currentJ] != "1" {
+				visitou += "E"
+			} else if currentI+1 < height && matriz[currentI+1][currentJ] != "1" && (!strings.HasSuffix(visitou, "CC") || !strings.HasSuffix(visitou, "BC")) {
 				currentCoord += fmt.Sprint("B [", currentI+1, currentJ, "]\n")
 				currentI += 1
+				visitou += "B"
+			} else if currentI-1 >= 0 || currentI+1 <= height || currentJ+1 <= width || currentJ-1 >= 0 {
+				fmt.Println("Labirinto resolvido!")
+				break
 			} else {
 				fmt.Println("Não é possivel resolver o labirinto")
 				break

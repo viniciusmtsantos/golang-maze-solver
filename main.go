@@ -18,7 +18,7 @@ func main() {
 
 	lineNumber := 1
 
-	file, err := os.Open("./maze2.txt")
+	file, err := os.Open("./entrada-labirinto.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -71,7 +71,7 @@ func main() {
 				startI = i
 				startJ = j
 				haveStart = true
-				currentCoord = fmt.Sprintf("O [%d,%d]\n", startI, startJ)
+				currentCoord = fmt.Sprintf("O [%d,%d]\n", startI+1, startJ+1)
 				break
 			}
 		}
@@ -95,19 +95,19 @@ func main() {
 
 		if (currentI-1 >= 0 || currentI+1 <= height || currentJ+1 <= width || currentJ-1 >= 0) && (matriz[currentI][currentJ] != "1") {
 			if currentI-1 > 0 && matriz[currentI-1][currentJ] != "1" && !visited[fmt.Sprintf("%d-%d", currentI-1, currentJ)] {
-				currentCoord += fmt.Sprintf("C [%d,%d]\n", currentI-1, currentJ)
+				currentCoord += fmt.Sprintf("C [%d,%d]\n", currentI-1+1, currentJ+1)
 				currentI -= 1
 			} else if currentJ+1 <= width && matriz[currentI][currentJ+1] != "1" && !visited[fmt.Sprintf("%d-%d", currentI, currentJ+1)] {
-				currentCoord += fmt.Sprintf("D [%d,%d]\n", currentI, currentJ+1)
+				currentCoord += fmt.Sprintf("D [%d,%d]\n", currentI+1, currentJ+1+1)
 				currentJ += 1
 			} else if currentJ-1 >= 0 && matriz[currentI][currentJ-1] != "1" && !visited[fmt.Sprintf("%d-%d", currentI, currentJ-1)] {
-				currentCoord += fmt.Sprintf("E [%d,%d]\n", currentI, currentJ-1)
+				currentCoord += fmt.Sprintf("E [%d,%d]\n", currentI+1, currentJ-1+1)
 				currentJ -= 1
 			} else if currentI+1 <= height && matriz[currentI+1][currentJ] != "1" && !visited[fmt.Sprintf("%d-%d", currentI+1, currentJ)] {
-				currentCoord += fmt.Sprintf("B [%d,%d]\n", currentI+1, currentJ)
+				currentCoord += fmt.Sprintf("B [%d,%d]\n", currentI+1+1, currentJ+1)
 				currentI += 1
 			} else {
-				fmt.Println("Não é possível resolver o labirinto")
+				fmt.Println("Não é possível resolver o labirinto. Talvez sem saída.")
 				break
 			}
 		}

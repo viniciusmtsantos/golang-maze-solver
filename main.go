@@ -14,11 +14,11 @@ func main() {
 	var matriz [][]string
 	var fields []string
 	var haveStart bool
-	var currentCoord string
+	// var currentCoord string
 
 	lineNumber := 1
 
-	file, err := os.Open("./entrada-labirinto3.txt")
+	file, err := os.Open("./entrada-labirinto2.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,11 +67,11 @@ func main() {
 
 	for i := 0; i < len(matriz); i++ {
 		for j := 0; j < len(matriz[i]); j++ {
-			if matriz[i][j] == "X" {
+			if matriz[i][j] == "E" {
 				startI = i
 				startJ = j
 				haveStart = true
-				currentCoord = fmt.Sprintf("O [%d,%d]\n", startI+1, startJ+1)
+				// currentCoord = fmt.Sprintf("O [%d,%d]\n", startI+1, startJ+1)
 				break
 			}
 		}
@@ -83,45 +83,100 @@ func main() {
 	currentI = startI
 	currentJ = startJ
 	visited := make(map[string]bool)
-	deadLine := make(map[string]bool)
+	// deadLine := make(map[string]bool)
 	visited[fmt.Sprintf("%d-%d", currentI, currentJ)] = true
 
-	for {
+	labirinto(currentI, currentJ, width, height, matriz)
+	mostrarlabirinto(matriz)
 
-		if (currentI == 0 || currentJ == 0) && matriz[currentI][currentJ] != "X" {
-			break
-		} else if (currentI+1 >= height || currentJ+1 >= width) && matriz[currentI][currentJ] != "X" {
-			break
-		}
+	// fmt.Println(matriz)
 
-		if (currentI-1 >= 0 || currentI+1 <= height || currentJ+1 <= width || currentJ-1 >= 0) && (matriz[currentI][currentJ] != "1") {
-			if currentI-1 > 0 && matriz[currentI-1][currentJ] != "1" && (!visited[fmt.Sprintf("%d-%d", currentI-1, currentJ)] || deadLine[fmt.Sprintf("%d-%d", currentI, currentJ)]) {
-				currentCoord += fmt.Sprintf("C [%d,%d]\n", currentI-1+1, currentJ+1)
-				currentI -= 1
-			} else if currentJ+1 <= width && matriz[currentI][currentJ+1] != "1" && (!visited[fmt.Sprintf("%d-%d", currentI, currentJ+1)] || deadLine[fmt.Sprintf("%d-%d", currentI, currentJ)]) {
-				currentCoord += fmt.Sprintf("D [%d,%d]\n", currentI+1, currentJ+1+1)
-				currentJ += 1
-			} else if currentJ-1 >= 0 && matriz[currentI][currentJ-1] != "1" && (!visited[fmt.Sprintf("%d-%d", currentI, currentJ-1)] || deadLine[fmt.Sprintf("%d-%d", currentI, currentJ)]) {
-				currentCoord += fmt.Sprintf("E [%d,%d]\n", currentI+1, currentJ-1+1)
-				currentJ -= 1
-			} else if currentI+1 <= height && matriz[currentI+1][currentJ] != "1" && (!visited[fmt.Sprintf("%d-%d", currentI+1, currentJ)] || deadLine[fmt.Sprintf("%d-%d", currentI, currentJ)]) {
-				currentCoord += fmt.Sprintf("B [%d,%d]\n", currentI+1+1, currentJ+1)
-				currentI += 1
-			} else {
-				deadLine[fmt.Sprintf("%d-%d", currentI, currentJ)] = true
-				continue
-			}
-		}
+	// for {
 
-		visited[fmt.Sprintf("%d-%d", currentI, currentJ)] = true
+	// 	if (currentI == 0 || currentJ == 0) && matriz[currentI][currentJ] != "X" {
+	// 		break
+	// 	} else if (currentI+1 >= height || currentJ+1 >= width) && matriz[currentI][currentJ] != "X" {
+	// 		break
+	// 	}
 
+	// 	if (currentI-1 >= 0 || currentI+1 <= height || currentJ+1 <= width || currentJ-1 >= 0) && (matriz[currentI][currentJ] != "1") {
+	// 		if currentI-1 > 0 && matriz[currentI-1][currentJ] != "1" && (!visited[fmt.Sprintf("%d-%d", currentI-1, currentJ)] || deadLine[fmt.Sprintf("%d-%d", currentI, currentJ)]) {
+	// 			currentCoord += fmt.Sprintf("C [%d,%d]\n", currentI-1+1, currentJ+1)
+	// 			currentI -= 1
+	// 		} else if currentJ+1 <= width && matriz[currentI][currentJ+1] != "1" && (!visited[fmt.Sprintf("%d-%d", currentI, currentJ+1)] || deadLine[fmt.Sprintf("%d-%d", currentI, currentJ)]) {
+	// 			currentCoord += fmt.Sprintf("D [%d,%d]\n", currentI+1, currentJ+1+1)
+	// 			currentJ += 1
+	// 		} else if currentJ-1 >= 0 && matriz[currentI][currentJ-1] != "1" && (!visited[fmt.Sprintf("%d-%d", currentI, currentJ-1)] || deadLine[fmt.Sprintf("%d-%d", currentI, currentJ)]) {
+	// 			currentCoord += fmt.Sprintf("E [%d,%d]\n", currentI+1, currentJ-1+1)
+	// 			currentJ -= 1
+	// 		} else if currentI+1 <= height && matriz[currentI+1][currentJ] != "1" && (!visited[fmt.Sprintf("%d-%d", currentI+1, currentJ)] || deadLine[fmt.Sprintf("%d-%d", currentI, currentJ)]) {
+	// 			currentCoord += fmt.Sprintf("B [%d,%d]\n", currentI+1+1, currentJ+1)
+	// 			currentI += 1
+	// 		} else {
+	// 			deadLine[fmt.Sprintf("%d-%d", currentI, currentJ)] = true
+	// 			continue
+	// 		}
+	// 	}
+
+	// 	visited[fmt.Sprintf("%d-%d", currentI, currentJ)] = true
+
+	// }
+	// fmt.Println(currentCoord)
+
+	// fileToCreatte, err := os.Create("./resolvido.txt")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+	// fileToCreatte.WriteString(currentCoord)
+}
+
+func labirinto(currentI, currentJ, width, height int, maze [][]string) int {
+	// Se tentou sair do lab, est enão é o caminho
+	if currentI < 0 || currentI >= height || currentJ < 0 || currentJ >= width {
+		return 0
 	}
-	fmt.Println(currentCoord)
+	currentPosition := maze[currentI][currentJ]
 
-	fileToCreatte, err := os.Create("./resolvido.txt")
-	if err != nil {
-		fmt.Println(err)
+	// verifica se achou saida
+	if currentPosition == "S" {
+		return 1
 	}
 
-	fileToCreatte.WriteString(currentCoord)
+	// se bateu na parede ou voltou para algum lugar que ja esteve este não é o caminho
+	if currentPosition == "1" || currentPosition == ">" || currentPosition == "^" || currentPosition == "v" || currentPosition == "<" {
+		return 0
+	}
+
+	maze[currentI][currentJ] = "^"
+	if labirinto(currentI-1, currentJ, width, height, maze) != 0 {
+		return 1
+	}
+
+	maze[currentI][currentJ] = ">"
+	if labirinto(currentI, currentJ+1, width, height, maze) != 0 {
+		return 1
+	}
+	maze[currentI][currentJ] = "<"
+	if labirinto(currentI, currentJ-1, width, height, maze) != 0 {
+		return 1
+	}
+
+	maze[currentI][currentJ] = "v"
+	if labirinto(currentI+1, currentJ, width, height, maze) != 0 {
+		return 1
+	}
+
+	// Não deu, volta
+	maze[currentI][currentJ] = "O"
+	return 0
+}
+
+func mostrarlabirinto(matriz [][]string) {
+	for i := 0; i < len(matriz); i++ {
+		for j := 0; j < len(matriz[i]); j++ {
+			fmt.Print(matriz[i][j], " ")
+		}
+		fmt.Println()
+	}
 }
